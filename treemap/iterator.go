@@ -29,7 +29,7 @@ import (
 
 // Iterator points to the specific item and can iterate items in both
 // direction.  Iterator is invalidated when there is a change in the
-// underlying Map.  In general, insertion and removal make all
+// underlying [Map].  In general, insertion and removal make all
 // existing Iterators invalidated.
 type Iterator[Key comparable, Value any] struct {
 	node *leafNode[Key, Value]
@@ -37,19 +37,19 @@ type Iterator[Key comparable, Value any] struct {
 }
 
 // Key returns the key pointed by it.  This function must not be
-// called if it.End() returns true.
+// called if [Iterator.End] returns true.
 func (it Iterator[Key, Value]) Key() Key {
 	return it.node.keys[it.idx]
 }
 
 // Value returns the value pointed by it.  This function must not be
-// called if it.End() returns true.
+// called if [Iterator.End] returns true.
 func (it Iterator[Key, Value]) Value() Value {
 	return it.node.values[it.idx]
 }
 
 // SetValue sets value to the current position.  This function must
-// not be called if it.End() returns true.
+// not be called if [Iterator.End] returns true.
 func (it Iterator[Key, Value]) SetValue(value Value) {
 	it.node.values[it.idx] = value
 }
@@ -65,7 +65,7 @@ func (it Iterator[Key, Value]) End() bool {
 }
 
 // Next returns the Iterator that points to the next item.  This
-// function must not be called if it.End() returns true.
+// function must not be called if [Iterator.End] returns true.
 func (it Iterator[Key, Value]) Next() Iterator[Key, Value] {
 	it.idx++
 
@@ -78,7 +78,7 @@ func (it Iterator[Key, Value]) Next() Iterator[Key, Value] {
 }
 
 // Prev returns the Iterator that points to the previous item.  This
-// function must not be called if it.Begin() returns true.
+// function must not be called if [Iterator.Begin] returns true.
 func (it Iterator[Key, Value]) Prev() Iterator[Key, Value] {
 	if it.idx == 0 {
 		it.node = it.node.prev

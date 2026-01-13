@@ -62,9 +62,9 @@ func New[Key cmp.Ordered, Value any]() *Map[Key, Value] {
 	}
 }
 
-// NewComparable returns new Map with custom Compare function.  New
-// should be used for Key that is of type cmd.Ordered because it is
-// much more efficient.
+// NewComparable returns new Map with custom [Compare] function.
+// [New] should be used for Key that is of type [cmp.Ordered] because
+// it is much more efficient.
 func NewComparable[Key comparable, Value any](
 	compare Compare[Key],
 ) *Map[Key, Value] {
@@ -200,7 +200,7 @@ func (m *Map[Key, Value]) Find(key Key) (Value, bool) {
 // LowerBound returns the Iterator that points to the item whose key
 // is the smallest key that is greater than or equal to key.  If all
 // stored keys are smaller than key, it returns the Iterator whose
-// End() returns true.
+// [Iterator.End] returns true.
 func (m *Map[Key, Value]) LowerBound(key Key) Iterator[Key, Value] {
 	node := m.root
 
@@ -275,8 +275,8 @@ func (m *Map[Key, Value]) Remove(key Key) bool {
 // that points to the item that follows the removed item.  The
 // provided it must not be invalidated, that means this function
 // always successfully remove the item.  The one exception is the case
-// where it.End() returns true.  In this case, this function returns
-// it without doing anything.
+// where [Iterator.End] returns true.  In this case, this function
+// returns it without doing anything.
 func (m *Map[Key, Value]) RemoveIter(
 	it Iterator[Key, Value],
 ) Iterator[Key, Value] {
