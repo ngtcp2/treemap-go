@@ -100,8 +100,12 @@ func (m *Map[Key, Value]) splitRoot() {
 
 // Insert inserts the given key-value pair.  If the key already
 // exists, its value is replaced with the given value.  It returns the
-// Iterator that points to the inserted or updated item.
-func (m *Map[Key, Value]) Insert(key Key, value Value) Iterator[Key, Value] {
+// Iterator that points to the inserted or updated item.  If the
+// existing value is replaced with new value, this function returns
+// the old value and true.  Otherwise, zero value and false.
+func (m *Map[Key, Value]) Insert(
+	key Key, value Value,
+) (Iterator[Key, Value], Value, bool) {
 	if m.root.IsFull() {
 		m.splitRoot()
 	}
@@ -110,8 +114,11 @@ func (m *Map[Key, Value]) Insert(key Key, value Value) Iterator[Key, Value] {
 
 	for {
 		if tnode, ok := node.(*leafNode[Key, Value]); ok {
+			var oldValue Value
+
 			i, ok := m.bsearch(tnode.Keys(), key)
 			if ok {
+				oldValue = tnode.values[i]
 				tnode.values[i] = value
 			} else {
 				tnode.InsertAt(i, key, value)
@@ -122,7 +129,7 @@ func (m *Map[Key, Value]) Insert(key Key, value Value) Iterator[Key, Value] {
 			return Iterator[Key, Value]{
 				node: tnode,
 				idx:  i,
-			}
+			}, oldValue, ok
 		}
 
 		inode := node.(*internalNode[Key, Value])
@@ -152,10 +159,12 @@ func (m *Map[Key, Value]) Insert(key Key, value Value) Iterator[Key, Value] {
 
 			m.n++
 
+			var oldValue Value
+
 			return Iterator[Key, Value]{
 				node: tnode,
 				idx:  idx,
-			}
+			}, oldValue, false
 		}
 
 		descNode := inode.nodes[i]
@@ -264,11 +273,12 @@ func (m *Map[Key, Value]) shiftRight(node *internalNode[Key, Value], i int) {
 }
 
 // Remove removes the item identified by key.  If an item is removed,
-// it returns true.  Otherwise, returns false.
-func (m *Map[Key, Value]) Remove(key Key) bool {
-	_, ok := m.remove(key)
+// it returns the removed value and true.  Otherwise, returns zero
+// value and false.
+func (m *Map[Key, Value]) Remove(key Key) (Value, bool) {
+	_, oldValue, ok := m.remove(key)
 
-	return ok
+	return oldValue, ok
 }
 
 // RemoveIter returns the item pointed by it.  It returns the Iterator
@@ -287,7 +297,7 @@ func (m *Map[Key, Value]) RemoveIter(
 	tnode := it.node
 
 	if tnode.n <= minNodes {
-		it, _ := m.remove(it.Key())
+		it, _, _ := m.remove(it.Key())
 		return it
 	}
 
@@ -307,7 +317,7 @@ func (m *Map[Key, Value]) RemoveIter(
 	}
 }
 
-func (m *Map[Key, Value]) remove(key Key) (Iterator[Key, Value], bool) {
+func (m *Map[Key, Value]) remove(key Key) (Iterator[Key, Value], Value, bool) {
 	node := m.root
 
 	if inode, ok := node.(*internalNode[Key, Value]); ok {
@@ -320,11 +330,14 @@ func (m *Map[Key, Value]) remove(key Key) (Iterator[Key, Value], bool) {
 
 	for {
 		if tnode, ok := node.(*leafNode[Key, Value]); ok {
+			var oldValue Value
+
 			i, _ := m.bsearch(tnode.Keys(), key)
 			if i == tnode.n || m.compare(key, tnode.keys[i]) != 0 {
-				return m.End(), false
+				return m.End(), oldValue, false
 			}
 
+			oldValue = tnode.values[i]
 			tnode.RemoveAt(i)
 
 			m.n--
@@ -332,13 +345,13 @@ func (m *Map[Key, Value]) remove(key Key) (Iterator[Key, Value], bool) {
 			if tnode.n == i && tnode.next != nil {
 				return Iterator[Key, Value]{
 					node: tnode.next,
-				}, true
+				}, oldValue, true
 			}
 
 			return Iterator[Key, Value]{
 				node: tnode,
 				idx:  i,
-			}, true
+			}, oldValue, true
 		}
 
 		inode := node.(*internalNode[Key, Value])
