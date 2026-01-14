@@ -7,6 +7,7 @@ require (
 	github.com/google/btree v1.1.3
 	github.com/ngtcp2/treemap-go v0.0.0-00010101000000-000000000000
 	github.com/tidwall/btree v1.8.1
+	k8s.io/utils v0.0.0-20260108192941-914a6e750570
 )
 
 replace github.com/ngtcp2/treemap-go => ../..

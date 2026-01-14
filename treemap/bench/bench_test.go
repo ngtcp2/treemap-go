@@ -33,6 +33,7 @@ import (
 	google "github.com/google/btree"
 	"github.com/ngtcp2/treemap-go/treemap"
 	"github.com/tidwall/btree"
+	k8s "k8s.io/utils/third_party/forked/golang/btree"
 )
 
 const N = 10000
@@ -432,6 +433,60 @@ func BenchmarkGoogleRemoveRand(b *testing.B) {
 		b.StopTimer()
 
 		m := google.NewG[int](btDegree, google.Less[int]())
+
+		for _, k := range a {
+			m.ReplaceOrInsert(k)
+		}
+
+		b.StartTimer()
+
+		for _, k := range d {
+			m.Delete(k)
+		}
+	}
+}
+
+func BenchmarkK8sInsertRand(b *testing.B) {
+	for b.Loop() {
+		m := k8s.NewOrdered[int](btDegree)
+
+		for _, k := range a {
+			m.ReplaceOrInsert(k)
+		}
+	}
+}
+
+func BenchmarkK8sLookupRand(b *testing.B) {
+	m := k8s.NewOrdered[int](btDegree)
+
+	for _, k := range a {
+		m.ReplaceOrInsert(k)
+	}
+
+	for b.Loop() {
+		for _, k := range d {
+			m.Get(k)
+		}
+	}
+}
+
+func BenchmarkK8sIterateRand(b *testing.B) {
+	m := k8s.NewOrdered[int](btDegree)
+
+	for _, k := range a {
+		m.ReplaceOrInsert(k)
+	}
+
+	for b.Loop() {
+		m.Ascend(func(int) bool { return true })
+	}
+}
+
+func BenchmarkK8sRemoveRand(b *testing.B) {
+	for b.Loop() {
+		b.StopTimer()
+
+		m := k8s.NewOrdered[int](btDegree)
 
 		for _, k := range a {
 			m.ReplaceOrInsert(k)
