@@ -87,13 +87,12 @@ func (inode *internalNode[Key, Value]) SplitAt(idx int, m *Map[Key, Value]) {
 	rnode := lnode.Split(m)
 
 	copy(inode.nodes[idx+2:], inode.nodes[idx+1:inode.n])
-	copy(inode.keys[idx+2:], inode.keys[idx+1:inode.n])
+	copy(inode.keys[idx+1:], inode.keys[idx:inode.n])
 
 	inode.nodes[idx+1] = rnode
 	inode.n++
 
 	inode.keys[idx] = lnode.LastKey()
-	inode.keys[idx+1] = rnode.LastKey()
 }
 
 func (inode *internalNode[Key, Value]) Merge(

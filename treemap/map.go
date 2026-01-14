@@ -165,10 +165,6 @@ func (m *Map[Key, Value]) Insert(key Key, value Value) Iterator[Key, Value] {
 
 			if m.compare(inode.keys[i], key) < 0 {
 				descNode = inode.nodes[i+1]
-
-				if m.compare(inode.keys[i+1], key) < 0 {
-					inode.keys[i+1] = key
-				}
 			}
 		}
 
