@@ -76,12 +76,12 @@ func TestIteratorPrev(t *testing.T) {
 	assert.Equal(t, -1, key)
 }
 
-type Item[Key comparable, Value any] struct {
+type Item[Key, Value any] struct {
 	Key   Key
 	Value Value
 }
 
-func Collect[Key comparable, Value any](
+func Collect[Key, Value any](
 	seq iter.Seq2[Key, Value],
 ) []Item[Key, Value] {
 	var s []Item[Key, Value]

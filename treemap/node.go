@@ -29,7 +29,7 @@ const (
 	minNodes = keyDegr
 )
 
-type node[Key comparable, Value any] interface {
+type node[Key, Value any] interface {
 	Size() int
 	LastKey() Key
 	IsFull() bool
@@ -39,7 +39,7 @@ type node[Key comparable, Value any] interface {
 	ShiftRight(o node[Key, Value], n int)
 }
 
-type internalNode[Key comparable, Value any] struct {
+type internalNode[Key, Value any] struct {
 	nodes [maxNodes]node[Key, Value]
 	keys  [maxNodes]Key
 	n     int
@@ -147,7 +147,7 @@ func (inode *internalNode[Key, Value]) ShiftRight(o node[Key, Value], n int) {
 	inode.n -= n
 }
 
-type leafNode[Key comparable, Value any] struct {
+type leafNode[Key, Value any] struct {
 	next   *leafNode[Key, Value]
 	prev   *leafNode[Key, Value]
 	values [maxNodes]Value

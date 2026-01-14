@@ -31,7 +31,7 @@ import (
 // direction.  Iterator is invalidated when there is a change in the
 // underlying [Map].  In general, insertion and removal make all
 // existing Iterators invalidated.
-type Iterator[Key comparable, Value any] struct {
+type Iterator[Key, Value any] struct {
 	node *leafNode[Key, Value]
 	idx  int
 }

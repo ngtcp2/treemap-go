@@ -35,7 +35,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func verifyMapNode[Key comparable, Value any](
+func verifyMapNode[Key, Value any](
 	t *testing.T, node node[Key, Value],
 	maxKey Key, m *Map[Key, Value],
 ) {
@@ -69,7 +69,7 @@ func verifyClear[T any](t *testing.T, v []T) {
 	}
 }
 
-func verifyMapLen[Key comparable, Value any](t *testing.T, m *Map[Key, Value]) {
+func verifyMapLen[Key, Value any](t *testing.T, m *Map[Key, Value]) {
 	t.Helper()
 
 	sum := 0
@@ -81,7 +81,7 @@ func verifyMapLen[Key comparable, Value any](t *testing.T, m *Map[Key, Value]) {
 	assert.Equal(t, sum, m.Len())
 }
 
-func verifyMapKey[Key comparable, Value any](
+func verifyMapKey[Key, Value any](
 	t *testing.T, m *Map[Key, Value], minKey Key,
 ) {
 	t.Helper()
@@ -94,7 +94,7 @@ func verifyMapKey[Key comparable, Value any](
 	}
 }
 
-func verifyMap[Key comparable, Value any](
+func verifyMap[Key, Value any](
 	t *testing.T, m *Map[Key, Value], minKey, maxKey Key,
 ) {
 	t.Helper()
@@ -110,11 +110,11 @@ func verifyMap[Key comparable, Value any](
 	verifyMapKey(t, m, minKey)
 }
 
-func printMap[Key comparable, Value any](m *Map[Key, Value]) { //nolint:unused
+func printMap[Key, Value any](m *Map[Key, Value]) { //nolint:unused
 	printMapNode(m.root, 0)
 }
 
-func printMapNode[Key comparable, Value any]( //nolint:unused
+func printMapNode[Key, Value any]( //nolint:unused
 	node node[Key, Value], level int,
 ) {
 	fmt.Printf("lv=%d\n", level)

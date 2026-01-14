@@ -35,12 +35,12 @@ import (
 // it must return -1.  If y is less than x, it must return 1.
 // Otherwise, x and y are considered equal, and this function must
 // return 0.
-type Compare[Key comparable] func(x, y Key) int
+type Compare[Key any] func(x, y Key) int
 
 type binarySearch[Key any] func([]Key, Key) (int, bool)
 
 // Map is the sorted, key-value storage.
-type Map[Key comparable, Value any] struct {
+type Map[Key, Value any] struct {
 	root    node[Key, Value]
 	front   *leafNode[Key, Value]
 	back    *leafNode[Key, Value]
@@ -65,7 +65,7 @@ func New[Key cmp.Ordered, Value any]() *Map[Key, Value] {
 // NewComparable returns new Map with custom [Compare] function.
 // [New] should be used for Key that is of type [cmp.Ordered] because
 // it is much more efficient.
-func NewComparable[Key comparable, Value any](
+func NewComparable[Key, Value any](
 	compare Compare[Key],
 ) *Map[Key, Value] {
 	node := &leafNode[Key, Value]{}
