@@ -538,8 +538,8 @@ func TestMapValues(t *testing.T) {
 	}
 }
 
-func TestMapComparable(t *testing.T) {
-	m := NewComparable[string, int](cmp.Compare[string])
+func TestMapNewAny(t *testing.T) {
+	m := NewAny[string, int](cmp.Compare[string])
 
 	m.Insert("foo", 1)
 	m.Insert("bar", 2)

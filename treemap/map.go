@@ -62,10 +62,10 @@ func New[Key cmp.Ordered, Value any]() *Map[Key, Value] {
 	}
 }
 
-// NewComparable returns new Map with custom [Compare] function.
-// [New] should be used for Key that is of type [cmp.Ordered] because
-// it is much more efficient.
-func NewComparable[Key, Value any](
+// NewAny returns new Map with custom [Compare] function.  [New]
+// should be used for Key that is of type [cmp.Ordered] because it is
+// much more efficient.
+func NewAny[Key, Value any](
 	compare Compare[Key],
 ) *Map[Key, Value] {
 	node := &leafNode[Key, Value]{}
