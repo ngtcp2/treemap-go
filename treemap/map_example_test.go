@@ -44,12 +44,12 @@ func ExampleMap() {
 	// 0 false
 }
 
-func ExampleNewComparable() {
+func ExampleNewAny() {
 	type Pair struct {
 		First, Second string
 	}
 
-	m := NewComparable[Pair, int](func(x, y Pair) int {
+	m := NewAny[Pair, int](func(x, y Pair) int {
 		return cmp.Or(
 			cmp.Compare(x.First, y.First),
 			cmp.Compare(x.Second, y.Second),

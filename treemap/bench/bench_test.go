@@ -139,7 +139,7 @@ func BenchmarkRemoveRand(b *testing.B) {
 
 func BenchmarkInsertComparableRand(b *testing.B) {
 	for b.Loop() {
-		m := treemap.NewComparable[Foo, int](compareFoo)
+		m := treemap.NewAny[Foo, int](compareFoo)
 
 		for _, k := range a {
 			m.Insert(Foo{X: k}, k)
@@ -148,7 +148,7 @@ func BenchmarkInsertComparableRand(b *testing.B) {
 }
 
 func BenchmarkLookupComparableRand(b *testing.B) {
-	m := treemap.NewComparable[Foo, int](compareFoo)
+	m := treemap.NewAny[Foo, int](compareFoo)
 
 	for _, k := range a {
 		m.Insert(Foo{X: k}, k)
@@ -162,7 +162,7 @@ func BenchmarkLookupComparableRand(b *testing.B) {
 }
 
 func BenchmarkIterateComparableRand(b *testing.B) {
-	m := treemap.NewComparable[Foo, int](compareFoo)
+	m := treemap.NewAny[Foo, int](compareFoo)
 
 	for _, k := range a {
 		m.Insert(Foo{X: k}, k)
@@ -187,7 +187,7 @@ func BenchmarkRemoveComparableRand(b *testing.B) {
 	for b.Loop() {
 		b.StopTimer()
 
-		m := treemap.NewComparable[Foo, int](compareFoo)
+		m := treemap.NewAny[Foo, int](compareFoo)
 
 		for _, k := range a {
 			m.Insert(Foo{X: k}, k)
