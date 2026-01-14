@@ -134,9 +134,11 @@ func printMapNode[Key, Value any]( //nolint:unused
 func TestMapInsert(t *testing.T) {
 	m := New[string, int]()
 
-	it := m.Insert("foo", 1)
+	it, oldValue, ok := m.Insert("foo", 1)
 
 	require.False(t, it.End())
+	assert.Zero(t, oldValue)
+	assert.False(t, ok)
 	assert.Equal(t, "foo", it.Key())
 	assert.Equal(t, 1, it.Value())
 
@@ -144,9 +146,11 @@ func TestMapInsert(t *testing.T) {
 
 	require.True(t, it.End())
 
-	it = m.Insert("bar", 2)
+	it, oldValue, ok = m.Insert("bar", 2)
 
 	require.False(t, it.End())
+	assert.Zero(t, oldValue)
+	assert.False(t, ok)
 	assert.Equal(t, "bar", it.Key())
 	assert.Equal(t, 2, it.Value())
 
@@ -163,9 +167,11 @@ func TestMapInsert(t *testing.T) {
 	assert.Equal(t, []int{2, 1},
 		slices.Collect(m.Values()))
 
-	it = m.Insert("foo", 100)
+	it, oldValue, ok = m.Insert("foo", 100)
 
 	require.False(t, it.End())
+	assert.Equal(t, 1, oldValue)
+	assert.True(t, ok)
 	assert.Equal(t, "foo", it.Key())
 	assert.Equal(t, 100, it.Value())
 	assert.Equal(t, []int{2, 100},
@@ -180,7 +186,7 @@ func TestMapInsertSplitNode(t *testing.T) {
 	}
 
 	// Select right node after split
-	it := m.Insert(32, 99)
+	it, _, _ := m.Insert(32, 99)
 
 	assert.Equal(t, 99, it.Value())
 }
@@ -243,7 +249,7 @@ func TestMapInsert1000(t *testing.T) {
 	m := New[int, int]()
 
 	for i := range 1000 {
-		it := m.Insert(i, i+1)
+		it, _, _ := m.Insert(i, i+1)
 
 		require.False(t, it.End())
 		assert.Equal(t, i, it.Key())
@@ -261,16 +267,27 @@ func TestMapInsert1000(t *testing.T) {
 func TestMapRemove(t *testing.T) {
 	m := New[int, int]()
 
-	assert.False(t, m.Remove(0))
+	oldValue, ok := m.Remove(0)
+
+	assert.Zero(t, oldValue)
+	assert.False(t, ok)
 
 	m.Insert(912, 1)
 	m.Insert(313, 2)
 	m.Insert(78, 3)
 
 	assert.Equal(t, 3, m.Len())
-	assert.True(t, m.Remove(912))
+
+	oldValue, ok = m.Remove(912)
+
+	assert.Equal(t, 1, oldValue)
+	assert.True(t, ok)
 	assert.Equal(t, 2, m.Len())
-	assert.False(t, m.Remove(912))
+
+	oldValue, ok = m.Remove(912)
+
+	assert.Zero(t, oldValue)
+	assert.False(t, ok)
 	assert.Equal(t, []int{78, 313}, slices.Collect(m.Keys()))
 	assert.Equal(t, []int{3, 2}, slices.Collect(m.Values()))
 
@@ -282,7 +299,10 @@ func TestMapRemove(t *testing.T) {
 		m.Insert(i, i)
 	}
 
-	assert.False(t, m.Remove(1000))
+	oldValue, ok = m.Remove(1000)
+
+	assert.Zero(t, oldValue)
+	assert.False(t, ok)
 }
 
 func TestMapRemoveIter(t *testing.T) {
@@ -294,7 +314,7 @@ func TestMapRemoveIter(t *testing.T) {
 
 	m.Insert(912, 1)
 	m.Insert(78, 3)
-	it = m.Insert(313, 2)
+	it, _, _ = m.Insert(313, 2)
 
 	assert.Equal(t, 3, m.Len())
 
@@ -318,7 +338,10 @@ func TestMapRemove1000(t *testing.T) {
 	}
 
 	for i := 0; i < 1000; i += 2 {
-		assert.True(t, m.Remove(i))
+		oldValue, ok := m.Remove(i)
+
+		assert.Equal(t, i+1, oldValue)
+		assert.True(t, ok)
 		assert.Equal(t, 999-i/2, m.Len())
 	}
 
