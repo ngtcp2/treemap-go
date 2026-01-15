@@ -303,6 +303,27 @@ func TestMapRemove(t *testing.T) {
 
 	assert.Zero(t, oldValue)
 	assert.False(t, ok)
+
+	// Verify leafNode.ShiftRight
+	m = New[int, int]()
+
+	for i := range 48 {
+		m.Insert(i, i)
+	}
+
+	m.Remove(15)
+
+	for i := range 9 {
+		m.Remove(24 + i)
+	}
+
+	assert.Equal(t, []int{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18,
+		19, 20, 21, 22, 23, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+		44, 45, 46, 47,
+	}, slices.Collect(m.Keys()))
+
+	verifyMap(t, m, 0, 48)
 }
 
 func TestMapRemoveIter(t *testing.T) {
