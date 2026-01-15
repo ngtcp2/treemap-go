@@ -44,7 +44,6 @@ func main() {
 	}
 
 	// Iteration with Go iterator
-
 	for k, v := range m.Begin().Seq() {
 		fmt.Println(k, v)
 	}
