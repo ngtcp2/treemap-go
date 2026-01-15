@@ -749,3 +749,43 @@ func TestMapInsertRemoveSplitExtendKey(t *testing.T) {
 
 	verifyMap(t, m, 0, math.MaxUint64)
 }
+
+func TestMapClear(t *testing.T) {
+	m := New[int, int]()
+
+	m.Clear()
+
+	assert.Equal(t, 0, m.Len())
+
+	verifyMap(t, m, 0, 0)
+
+	m.Insert(1, 1)
+
+	m.Clear()
+
+	assert.Equal(t, 0, m.Len())
+
+	verifyMap(t, m, 0, 0)
+
+	m.Insert(1, 2)
+	m.Insert(2, 3)
+
+	assert.Equal(t, 2, m.Len())
+	assert.Equal(t, []int{1, 2}, slices.Collect(m.Keys()))
+
+	verifyMap(t, m, 1, 2)
+}
+
+func TestMapClear1000(t *testing.T) {
+	m := New[int, int]()
+
+	for i := range 1000 {
+		m.Insert(i, i)
+	}
+
+	m.Clear()
+
+	assert.Equal(t, 0, m.Len())
+
+	verifyMap(t, m, 0, 0)
+}

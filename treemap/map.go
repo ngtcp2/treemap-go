@@ -453,3 +453,16 @@ func (m *Map[Key, Value]) String() string {
 
 	return b.String()
 }
+
+// Clear removes all items from m.
+func (m *Map[Key, Value]) Clear() {
+	if m.n == 0 {
+		return
+	}
+
+	node := &leafNode[Key, Value]{}
+	m.root = node
+	m.front = node
+	m.back = node
+	m.n = 0
+}
