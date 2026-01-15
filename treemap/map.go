@@ -296,7 +296,7 @@ func (m *Map[Key, Value]) RemoveIter(
 
 	tnode := it.node
 
-	if tnode.n <= minNodes {
+	if tnode != m.root && tnode.n == minNodes {
 		it, _, _ := m.remove(it.Key())
 		return it
 	}
