@@ -281,7 +281,7 @@ func (m *Map[Key, Value]) Remove(key Key) (Value, bool) {
 	return oldValue, ok
 }
 
-// RemoveIter returns the item pointed by it.  It returns the Iterator
+// RemoveIter removes the item pointed by it.  It returns the Iterator
 // that points to the item that follows the removed item.  The
 // provided it must not be invalidated, that means this function
 // always successfully remove the item.  The one exception is the case
@@ -421,7 +421,7 @@ func (m *Map[Key, Value]) Keys() iter.Seq[Key] {
 	}
 }
 
-// Keys returns an iterator over values in m in the sorted order of
+// Values returns an iterator over values in m in the sorted order of
 // the corresponding keys.
 func (m *Map[Key, Value]) Values() iter.Seq[Value] {
 	return func(yield func(Value) bool) {
