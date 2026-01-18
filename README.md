@@ -54,6 +54,31 @@ func main() {
 }
 ```
 
+## Benchmark: vs github.com/google/btree
+
+This is the benchmark result against popular but now archived
+`github.com/google/btree`.  We modified some of the benchmark tests in
+btree repository for our treemap-go and compared the result with
+btree.  btree is configured with degree=16 to match the one we use.
+
+```
+                 │ btree-deg16.txt │             treemap.txt             │
+                 │     sec/op      │   sec/op     vs base                │
+InsertG-24             91.52n ± 8%   88.81n ± 3%        ~ (p=0.143 n=10)
+SeekG-24               55.95n ± 0%   44.00n ± 0%  -21.35% (p=0.000 n=10)
+DeleteInsertG-24       166.2n ± 1%   146.8n ± 0%  -11.65% (p=0.000 n=10)
+DeleteG-24             94.52n ± 2%   86.41n ± 2%   -8.58% (p=0.000 n=10)
+GetG-24                77.25n ± 1%   70.91n ± 1%   -8.21% (p=0.000 n=10)
+AscendG-24            24.283µ ± 1%   9.942µ ± 1%  -59.06% (p=0.000 n=10)
+DescendG-24            24.33µ ± 2%   11.36µ ± 9%  -53.31% (p=0.000 n=10)
+geomean                448.8n        326.7n       -27.22%
+```
+
+The degree in treemap-go is fixed to 16, and it does not support
+copy-on-write feature, so it is not a drop-in replacement for btree.
+For use cases that do not require those features, treemap-go might
+provide an advantage, especially for iteration-heavy workloads.
+
 ## License
 
 ```
