@@ -57,9 +57,10 @@ func main() {
 ## Benchmark: vs github.com/google/btree
 
 This is the benchmark result against popular but now archived
-`github.com/google/btree`.  We modified some of the benchmark tests in
-btree repository for our treemap-go and compared the result with
-btree.  btree is configured with degree=16 to match the one we use.
+[github.com/google/btree](https://github.com/google/btree).  We
+adopted some of its benchmark tests for `treemap-go` to compare the
+two implementations.  The `github.com/google/btree` package was
+configured with degree=16 to match the configuration of `treemap-go`.
 
 ```
                  │ btree-deg16.txt │             treemap.txt             │
