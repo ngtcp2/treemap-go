@@ -394,7 +394,7 @@ func BenchmarkBTRemoveRand(b *testing.B) {
 
 func BenchmarkGoogleInsertRand(b *testing.B) {
 	for b.Loop() {
-		m := google.NewG[int](btDegree, google.Less[int]())
+		m := google.NewOrderedG[int](btDegree)
 
 		for _, k := range a {
 			m.ReplaceOrInsert(k)
@@ -403,7 +403,7 @@ func BenchmarkGoogleInsertRand(b *testing.B) {
 }
 
 func BenchmarkGoogleLookupRand(b *testing.B) {
-	m := google.NewG[int](btDegree, google.Less[int]())
+	m := google.NewOrderedG[int](btDegree)
 
 	for _, k := range a {
 		m.ReplaceOrInsert(k)
@@ -417,7 +417,7 @@ func BenchmarkGoogleLookupRand(b *testing.B) {
 }
 
 func BenchmarkGoogleIterateRand(b *testing.B) {
-	m := google.NewG[int](btDegree, google.Less[int]())
+	m := google.NewOrderedG[int](btDegree)
 
 	for _, k := range a {
 		m.ReplaceOrInsert(k)
@@ -432,7 +432,7 @@ func BenchmarkGoogleRemoveRand(b *testing.B) {
 	for b.Loop() {
 		b.StopTimer()
 
-		m := google.NewG[int](btDegree, google.Less[int]())
+		m := google.NewOrderedG[int](btDegree)
 
 		for _, k := range a {
 			m.ReplaceOrInsert(k)
