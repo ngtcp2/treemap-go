@@ -37,7 +37,7 @@ import (
 // return 0.
 type Compare[Key any] func(x, y Key) int
 
-type binarySearch[Key any] func([]Key, Key) (int, bool)
+type search[Key any] func([]Key, Key) (int, bool)
 
 // Map is the sorted, key-value storage.
 type Map[Key, Value any] struct {
@@ -46,7 +46,7 @@ type Map[Key, Value any] struct {
 	back    *leafNode[Key, Value]
 	n       int
 	compare func(lhs, rhs Key) int
-	bsearch binarySearch[Key]
+	search  search[Key]
 }
 
 // New returns new Map for the ordered keys.
@@ -58,8 +58,24 @@ func New[Key cmp.Ordered, Value any]() *Map[Key, Value] {
 		front:   node,
 		back:    node,
 		compare: cmp.Compare[Key],
-		bsearch: slices.BinarySearch[[]Key, Key],
+		search:  linearSearchOrdered[Key],
 	}
+}
+
+// linearSearchOrdered searches target in keys in O(n).  With keyDegr
+// = 16, linear search is faster than binary search for cmp.Ordered
+// types.
+func linearSearchOrdered[Key cmp.Ordered](keys []Key, target Key) (int, bool) {
+	for i, key := range keys {
+		switch {
+		case key == target:
+			return i, true
+		case key > target:
+			return i, false
+		}
+	}
+
+	return len(keys), false
 }
 
 // NewAny returns new Map with custom [Compare] function.  [New]
@@ -75,7 +91,7 @@ func NewAny[Key, Value any](
 		front:   node,
 		back:    node,
 		compare: compare,
-		bsearch: func(keys []Key, target Key) (int, bool) {
+		search: func(keys []Key, target Key) (int, bool) {
 			return slices.BinarySearchFunc(keys, target, compare)
 		},
 	}
@@ -116,7 +132,7 @@ func (m *Map[Key, Value]) Insert(
 		if tnode, ok := node.(*leafNode[Key, Value]); ok {
 			var oldValue Value
 
-			i, ok := m.bsearch(tnode.Keys(), key)
+			i, ok := m.search(tnode.Keys(), key)
 			if ok {
 				oldValue = tnode.values[i]
 				tnode.values[i] = value
@@ -134,7 +150,7 @@ func (m *Map[Key, Value]) Insert(
 
 		inode := node.(*internalNode[Key, Value])
 
-		i, _ := m.bsearch(inode.Keys(), key)
+		i, _ := m.search(inode.Keys(), key)
 		if i == inode.n {
 			for {
 				node = inode.nodes[inode.n-1]
@@ -191,7 +207,7 @@ func (m *Map[Key, Value]) Find(key Key) (Value, bool) {
 
 	for {
 		if tnode, ok := node.(*leafNode[Key, Value]); ok {
-			i, ok := m.bsearch(tnode.Keys(), key)
+			i, ok := m.search(tnode.Keys(), key)
 			if !ok {
 				return z, false
 			}
@@ -201,7 +217,7 @@ func (m *Map[Key, Value]) Find(key Key) (Value, bool) {
 
 		inode := node.(*internalNode[Key, Value])
 
-		i, _ := m.bsearch(inode.KeysForFindAndRemove(), key)
+		i, _ := m.search(inode.KeysForFindAndRemove(), key)
 		node = inode.nodes[i]
 	}
 }
@@ -215,7 +231,7 @@ func (m *Map[Key, Value]) LowerBound(key Key) Iterator[Key, Value] {
 
 	for {
 		if tnode, ok := node.(*leafNode[Key, Value]); ok {
-			i, _ := m.bsearch(tnode.Keys(), key)
+			i, _ := m.search(tnode.Keys(), key)
 			if i == tnode.n && tnode.next != nil {
 				tnode = tnode.next
 				i = 0
@@ -229,7 +245,7 @@ func (m *Map[Key, Value]) LowerBound(key Key) Iterator[Key, Value] {
 
 		inode := node.(*internalNode[Key, Value])
 
-		i, _ := m.bsearch(inode.KeysForFindAndRemove(), key)
+		i, _ := m.search(inode.KeysForFindAndRemove(), key)
 		node = inode.nodes[i]
 	}
 }
@@ -332,7 +348,7 @@ func (m *Map[Key, Value]) remove(key Key) (Iterator[Key, Value], Value, bool) {
 		if tnode, ok := node.(*leafNode[Key, Value]); ok {
 			var oldValue Value
 
-			i, _ := m.bsearch(tnode.Keys(), key)
+			i, _ := m.search(tnode.Keys(), key)
 			if i == tnode.n || m.compare(key, tnode.keys[i]) != 0 {
 				return m.End(), oldValue, false
 			}
@@ -356,7 +372,7 @@ func (m *Map[Key, Value]) remove(key Key) (Iterator[Key, Value], Value, bool) {
 
 		inode := node.(*internalNode[Key, Value])
 
-		i, _ := m.bsearch(inode.KeysForFindAndRemove(), key)
+		i, _ := m.search(inode.KeysForFindAndRemove(), key)
 		descNode := inode.nodes[i]
 
 		if descNode.Size() > minNodes {
